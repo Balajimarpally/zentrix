@@ -52,11 +52,41 @@ export default function ContactPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    // TODO: Replace with actual form submission API logic
-    setTimeout(() => setLoading(false), 1500);
-  };
+  e.preventDefault();
+  setLoading(true);
+  setSuccess(false);
+
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      setSuccess(true);
+
+      // ✅ CLEAR FORM HERE
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        website: "",
+        service: "",
+        message: "",
+      });
+    } else {
+      alert("Submission failed. Please try again.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>
